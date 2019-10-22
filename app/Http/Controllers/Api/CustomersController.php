@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Customer;
+use App\Http\Resources\Customer as CustomerResource;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -15,7 +16,9 @@ class CustomersController extends Controller
      */
     public function index()
     {
-        return Customer::all();
+        $customers = Customer::paginate(10);
+
+        return CustomerResource::collection($customers);
     }
 
     /**
@@ -33,10 +36,11 @@ class CustomersController extends Controller
 
         $customer->amount = $input[3];
         $customer->number = $input[5];
-        $customer->name = $input[7]." ".$input[8];
+        $customer->firstname = $input[7];
+        $customer->lastname = $input[8];
         $customer->save();
 
-        return 'OK';
+        return new CustomerResource($customer);
     }
 
     /**
@@ -47,7 +51,7 @@ class CustomersController extends Controller
      */
     public function show($id)
     {
-        return Customer::findOrFail($id);
+        return new CustomerResource(Customer::findOrFail($id));
     }
 
     /**
@@ -60,7 +64,8 @@ class CustomersController extends Controller
     public function update(Request $request, $id)
     {
         $req = $request->all();
-        //some logic here
+        //TODO: Implement some logic in the update method
+        return response()->json($customer, 200);
     }
 
     /**
@@ -71,7 +76,9 @@ class CustomersController extends Controller
      */
     public function destroy($id)
     {
-        Customer::findOrFail(id)
-        ->delete();
+        $customer = Customer::findOrFail($id);
+        if($customer->delete()){
+            return response()->json(null, 204);;
+        }
     }
 }

@@ -7,7 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 class Customer extends Model
 {
     //
-    protected $fillable = ['name','amount','number'];
-    //OR
-    //protected $guaded = ['id']; 
+    protected $fillable = ['firstname','lastname','amount','number'];
+
+    public function getFullnameAttribute()
+    {
+        return $this->firstname." ".$this->lastname;
+    }
 }
